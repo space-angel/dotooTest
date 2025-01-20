@@ -1,6 +1,6 @@
-import prisma from "@/lib/prisma"
+import prisma from "../../lib/prisma"
 import DashboardView from "./DashboardView"
-import type { Task } from "@/types/task"
+import type { Task } from "../../types/task"
 
 export default async function DashboardPage() {
   const tasks = await prisma.task.findMany({

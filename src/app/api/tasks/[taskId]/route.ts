@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { authenticate } from "@/app/api/middleware/auth";
+import prisma from "../../../../lib/prisma";
+import { authenticate } from "../../middleware/auth";
 
 // PATCH 메서드
 export async function PATCH(
