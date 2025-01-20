@@ -2,54 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const { email, password, name } = await request.json();
+    const { email, password, name } = await req.json();
 
-    // 이메일 유효성 검사
-    if (!email || !email.includes('@')) {
-      return NextResponse.json(
-        { error: '유효한 이메일을 입력해주세요.' },
-        { status: 400 }
-      );
+    if (!email || !password || !name) {
+      return new NextResponse("필수 정보가 누락되었습니다.", { status: 400 });
     }
 
-    // 비밀번호 유효성 검사
-    if (!password || password.length < 6) {
-      return NextResponse.json(
-        { error: '비밀번호는 최소 6자 이상이어야 합니다.' },
-        { status: 400 }
-      );
-    }
-
-    // 이메일 중복 확인
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json(
-        { error: '이미 사용 중인 이메일입니다.' },
-        { status: 400 }
-      );
+      return new NextResponse("이미 등록된 이메일입니다.", { status: 400 });
     }
 
-    // 비밀번호 해시화
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // 사용자 생성
     const user = await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
-        name: name || email.split('@')[0],
+        name,
+        password: await bcrypt.hash(password, 12),
       },
+      select: {
+        id: true,
+        email: true,
+        name: true
+      }
     });
 
-    const { password: _, ...userWithoutPassword } = user;
-    
-    return NextResponse.json(userWithoutPassword);
-  } catch (error) {
-    return NextResponse.json({ error: "Something went wrong!" }, { status: 500 });
+    return NextResponse.json(user);
+  } catch (err) {
+    console.error("회원가입 에러:", err);
+    return new NextResponse("회원가입 처리 중 오류가 발생했습니다.", { status: 500 });
   }
 } 
