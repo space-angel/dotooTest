@@ -1,36 +1,36 @@
 'use client'
 
 import { useRef, useState } from 'react';
-import { format } from 'date-fns';
 import { useOutsideClick } from '../hooks/useOutsideClick';
-import type { Task } from '../types/task';
 import TaskToggleButton from './TaskToggleButton';
 
-interface TaskItemProps {
+interface Space {
+  id: string;
+  name: string;
+  color?: string;
+}
+
+interface Props {
   id: string;
   title: string;
-  assignedTo?: string | null;
+  assignedTo: string | null;
   dueDate: string;
-  isCompleted?: boolean;
-  space?: {
-    id: string;
-    name: string;
-    color?: string;
-  } | null;
-  onToggleComplete?: (taskId: string) => void;
-  onDelete?: (taskId: string) => void;
+  isCompleted: boolean;
+  space: Space | null;
+  onToggleComplete: (taskId: string) => Promise<void>;
+  onDelete: (taskId: string) => Promise<void>;
 }
 
 export default function TaskItem({ 
   id,
   title, 
-  assignedTo,
-  dueDate,
-  isCompleted = false,
+  assignedTo, 
+  dueDate, 
+  isCompleted,
   space,
   onToggleComplete,
-  onDelete
-}: TaskItemProps) {
+  onDelete 
+}: Props) {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
@@ -87,7 +87,7 @@ export default function TaskItem({
           <div className="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg py-1 z-10">
             <button
               onClick={() => {
-                onDelete?.(id);
+                onDelete(id);
                 setShowDropdown(false);
               }}
               className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-50"

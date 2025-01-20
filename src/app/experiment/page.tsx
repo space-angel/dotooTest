@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { format, startOfDay, isSameDay } from 'date-fns'
-import { EXPERIMENT2_TASKS, EXPERIMENT2_SPACES, EXPERIMENT2_USERS } from '../../constants/experiment2'
+import { EXPERIMENT2_SPACES, EXPERIMENT2_USERS } from '../../constants/experiment2'
 import Navbar from '../../components/Navbar'
 import WeeklyCalendar from '../../components/WeeklyCalendar'
 import type { ExperimentTask } from '../../types/task'
+
+
 
 export default function ExperimentPage() {
   const router = useRouter()
@@ -59,8 +61,7 @@ export default function ExperimentPage() {
     
     // timezone을 고려한 날짜 비교
     const taskDate = startOfDay(new Date(task.dueDate));
-    const compareDate = startOfDay(selectedDate);
-    return isSameDay(taskDate, compareDate);
+    return isSameDay(taskDate, selectedDate);
   });
 
   console.log('선택된 날짜의 tasks:', selectedDateTasks);
