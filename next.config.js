@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   images: {
-    unoptimized: true
-  },
-  basePath: '/dotooTest',
+    unoptimized: true,
+  }
 }
 
 module.exports = nextConfig 
