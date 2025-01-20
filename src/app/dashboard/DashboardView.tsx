@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Navbar from '../../components/Navbar'
 import WeeklyCalendar from '../../components/WeeklyCalendar'
 import TaskItem from '../../components/TaskItem'
-import type { Task } from '@/types/task'
+import type { Task } from '../../types/task'
 
 const FAMILY_MEMBERS = [
   { id: 'A', name: '김민수' },

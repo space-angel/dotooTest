@@ -2,8 +2,8 @@
 
 import { useState, use } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import BottomSheet from '@/components/BottomSheet'
-import { EXPERIMENT2_SPACES, EXPERIMENT2_TASKS, EXPERIMENT2_USERS } from '@/constants/experiment2'
+import BottomSheet from '../../../../../components/BottomSheet'
+import { EXPERIMENT2_SPACES, EXPERIMENT2_TASKS, EXPERIMENT2_USERS } from '../../../../../constants/experiment2'
 
 interface PageProps {
   params: Promise<{

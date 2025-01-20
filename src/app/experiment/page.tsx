@@ -7,7 +7,7 @@ import { format, startOfDay, isSameDay } from 'date-fns'
 import { EXPERIMENT2_TASKS, EXPERIMENT2_SPACES, EXPERIMENT2_USERS } from '../../constants/experiment2'
 import Navbar from '../../components/Navbar'
 import WeeklyCalendar from '../../components/WeeklyCalendar'
-import type { ExperimentTask } from '@/types/task'
+import type { ExperimentTask } from '../../types/task'
 
 export default function ExperimentPage() {
   const router = useRouter()

@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && npx prisma generate && next build"
+  command = "npm install && npm install -D tailwindcss postcss autoprefixer && npx prisma generate && npx prisma migrate deploy && next build"
   publish = ".next"
 
 [[plugins]]
@@ -15,7 +15,7 @@
   node_bundler = "esbuild"
 
 [context.production]
-  command = "npm install && npx prisma generate && next build"
+  command = "npm install && npm install -D tailwindcss postcss autoprefixer && npx prisma generate && npx prisma migrate deploy && next build"
 
 [context.production.environment]
   NODE_ENV = "production" 
