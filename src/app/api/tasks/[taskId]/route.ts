@@ -1,110 +1,81 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
-
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined in environment variables')
-}
-
-const JWT_SECRET = process.env.JWT_SECRET
-
-interface RouteParams {
-  params: {
-    taskId: string
-  }
-}
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { authenticate } from "@/app/api/middleware/auth";
 
 // PATCH 메서드
 export async function PATCH(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ taskId: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token');
+    const userId = await authenticate();
+    const { taskId } = await params;
 
-    if (!token) {
+    const body = await request.json();
+    const { isCompleted } = body;
+
+    if (typeof isCompleted !== "boolean") {
       return NextResponse.json(
-        { message: "로그인이 필요합니다." },
-        { status: 401 }
+        { message: "isCompleted 값은 boolean 타입이어야 합니다." },
+        { status: 400 }
       );
     }
 
-    let userId: string;
     try {
-      const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
-      userId = verified.userId;
-    } catch {
+      const task = await prisma.task.update({
+        where: {
+          id: taskId,
+          userId,
+        },
+        data: {
+          isCompleted,
+        },
+      });
+
+      return NextResponse.json({ task });
+    } catch (error) {
+      console.error("Task 업데이트 중 오류:", error);
       return NextResponse.json(
-        { message: "유효하지 않은 인증 토큰입니다." },
-        { status: 401 }
+        { message: "할일 업데이트에 실패했습니다." },
+        { status: 500 }
       );
     }
-
-    const { isCompleted } = await request.json();
-
-    const task = await prisma.task.update({
-      where: {
-        id: params.taskId,
-        userId
-      },
-      data: {
-        isCompleted
-      }
-    });
-
-    return NextResponse.json({ task }, { status: 200 });
-  } catch {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "인증 오류가 발생했습니다.";
     return NextResponse.json(
-      { message: "할일 업데이트에 실패했습니다." },
-      { status: 500 }
+      { message: errorMessage },
+      { status: 401 }
     );
   }
 }
 
-// DELETE 메서드
-export async function DELETE(
-  _request: NextRequest,
-  { params }: RouteParams
+// GET 메서드
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ taskId: string }> }
 ) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token');
+    const { taskId } = await params;
 
-    if (!token) {
-      return NextResponse.json(
-        { message: "로그인이 필요합니다." },
-        { status: 401 }
-      );
-    }
-
-    let userId: string;
-    try {
-      const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
-      userId = verified.userId;
-    } catch {
-      return NextResponse.json(
-        { message: "유효하지 않은 인증 토큰입니다." },
-        { status: 401 }
-      );
-    }
-
-    const task = await prisma.task.delete({
+    const task = await prisma.task.findUnique({
       where: {
-        id: params.taskId,
-        userId
-      }
+        id: taskId,
+      },
     });
 
+    if (!task) {
+      return NextResponse.json(
+        { message: "Task를 찾을 수 없습니다." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(task);
+  } catch (error) {
+    console.error("Task 조회 중 오류:", error);
     return NextResponse.json(
-      { message: "할일이 삭제되었습니다.", task },
-      { status: 200 }
-    );
-  } catch {
-    return NextResponse.json(
-      { message: "할일 삭제에 실패했습니다." },
+      { message: "Task 조회에 실패했습니다." },
       { status: 500 }
     );
   }
-} 
+}

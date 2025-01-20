@@ -1,19 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function LoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams()
   const registered = searchParams.get('registered')
-  const [error, setError] = useState<string>('')
+  const error = searchParams.get('error')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    setError('')
 
     try {
       const formData = new FormData(e.currentTarget)
@@ -43,20 +42,14 @@ export default function LoginPage() {
           window.location.href = '/test-environment'
         } catch (error) {
           console.error('라우팅 에러:', error)
-          setError('페이지 이동 중 오류가 발생했습니다.')
+          throw new Error('페이지 이동 중 오류가 발생했습니다.')
         }
       } else {
         throw new Error('로그인 응답이 올바르지 않습니다.')
       }
     } catch (error) {
       console.error('로그인 에러:', error)
-      if (error instanceof Error) {
-        setError(error.message)
-      } else {
-        setError('로그인 처리 중 오류가 발생했습니다.')
-      }
-    } finally {
-      setIsLoading(false)
+      throw error
     }
   }
 
@@ -100,7 +93,7 @@ export default function LoginPage() {
 
           {error && (
             <p className="text-sm text-red-600">
-              {error}
+              {error === 'credentials' ? '이메일 또는 비밀번호가 올바르지 않습니다.' : error}
             </p>
           )}
 
@@ -125,5 +118,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   )
 } 

@@ -1,23 +1,29 @@
 'use client'
 
-import { useState, useRef,useEffect } from 'react';
-import TaskToggleButton from './TaskToggleButton'
-import { Space } from '@/types/task'
+import { useRef, useState } from 'react';
+import TaskToggleButton from './TaskToggleButton';
+import useOutsideClick from '@/hooks/useOutsideClick';
 
 interface TaskItemProps {
   id: string;
   title: string;
-  assignedTo: string | null;
-  isCompleted: boolean;
-  space: Space | null;
-  onToggleComplete?: (taskId: string) => Promise<void>;
-  onDelete?: (taskId: string) => Promise<void>;
+  assignedTo?: string | null;
+  dueDate: string;
+  isCompleted?: boolean;
+  space?: {
+    id: string;
+    name: string;
+    color?: string;
+  } | null;
+  onToggleComplete?: (taskId: string) => void;
+  onDelete?: (taskId: string) => void;
 }
 
 export default function TaskItem({ 
   id,
   title, 
-  assignedTo, 
+  assignedTo,
+  dueDate,
   isCompleted = false,
   space,
   onToggleComplete,
@@ -26,48 +32,40 @@ export default function TaskItem({
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  useEffect(() => {
-    if (!dropdownRef.current) return;
-    
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const assignedMember = assignedTo || "미배정";
+  useOutsideClick(dropdownRef as React.RefObject<HTMLElement>, () => setShowDropdown(false));
 
   return (
-    <div className={`p-4 bg-white rounded-lg shadow-sm flex justify-between items-start
-      transition-all duration-300 ease-in-out
-      ${isCompleted ? 'opacity-60 bg-gray-50' : ''}`}>
-      <div className="flex items-center gap-3">
-        <TaskToggleButton 
+    <div className="flex items-center justify-between py-3 px-4 border-b">
+      <div className="flex items-center gap-3 flex-1">
+        <TaskToggleButton
           taskId={id}
           isCompleted={isCompleted}
           onToggle={onToggleComplete}
         />
-        <div>
+        <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className={`font-medium ${isCompleted ? 'line-through text-gray-500' : ''}`}>
+            <span className={`text-sm ${isCompleted ? 'text-gray-400 line-through' : ''}`}>
               {title}
-            </h3>
+            </span>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
             {space && (
-              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+              <span className="text-xs text-gray-500">
                 {space.name}
               </span>
             )}
-          </div>
-          <div className="mt-1 text-sm text-gray-500">
-            {assignedMember}
+            {assignedTo && (
+              <span className="text-xs text-gray-500">
+                {assignedTo}
+              </span>
+            )}
+            <span className="text-xs text-gray-500">
+              {new Date(dueDate).toLocaleDateString()}
+            </span>
           </div>
         </div>
       </div>
-
+      
       <div className="relative" ref={dropdownRef}>
         <button 
           onClick={() => setShowDropdown(!showDropdown)}
