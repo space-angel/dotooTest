@@ -49,10 +49,9 @@ export async function POST(request: NextRequest) {
     const { password: _, ...userWithoutPassword } = user;
     
     return NextResponse.json(userWithoutPassword);
-  } catch (error) {
-    console.error('회원가입 처리 중 오류:', error);
+  } catch {
     return NextResponse.json(
-      { error: '회원가입 처리 중 오류가 발생했습니다.' },
+      { message: '회원가입에 실패했습니다.' },
       { status: 500 }
     );
   }

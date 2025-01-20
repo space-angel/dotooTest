@@ -6,16 +6,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token');
-
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const verified = jwt.verify(token.value, JWT_SECRET);
-    return NextResponse.json({ authenticated: true, user: verified });
-  } catch (error) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    // 여기에 실제 사용하시는 인증 로직을 구현하시면 됩니다
+    // 예: 세션 쿠키 확인, JWT 토큰 확인 등
+    return NextResponse.json({ isAuthenticated: false });
+  } catch {
+    return NextResponse.json({ isAuthenticated: false });
   }
 } 

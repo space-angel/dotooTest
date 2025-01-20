@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Task, Space } from '@/types/task'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { format, startOfDay, isSameDay } from 'date-fns'
@@ -8,6 +9,11 @@ import { EXPERIMENT2_SPACES, EXPERIMENT2_USERS } from '@/constants/experiment2'
 import Navbar from '@/components/Navbar'
 import WeeklyCalendar from '@/components/WeeklyCalendar'
 import type { ExperimentTask } from '@/types/task'
+
+interface TasksResponse {
+  tasks: Task[]
+  spaces: Space[]
+}
 
 // API 응답 데이터 타입 정의
 interface TaskResponse {
