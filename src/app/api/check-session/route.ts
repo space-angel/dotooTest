@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { cookies } from 'next/headers'
+import jwt from 'jsonwebtoken'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
-  return NextResponse.json({ 
-    authenticated: !!session,
-    session 
-  })
+  try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get('auth-token')
+
+    if (!token) {
+      return NextResponse.json({ authenticated: false }, { status: 401 })
+    }
+
+    const verified = jwt.verify(token.value, JWT_SECRET)
+    return NextResponse.json({ authenticated: true, user: verified })
+  } catch (error) {
+    return NextResponse.json({ authenticated: false }, { status: 401 })
+  }
 } 

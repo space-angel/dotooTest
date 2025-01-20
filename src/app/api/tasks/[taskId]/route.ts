@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import prisma from '@/lib/prisma';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // PATCH 메서드
 export async function PATCH(
@@ -9,17 +11,20 @@ export async function PATCH(
   { params }: { params: { taskId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token');
+
+    if (!token) {
       return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
     }
 
+    const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
     const { isCompleted } = await req.json();
 
     const updatedTask = await prisma.task.update({
       where: {
         id: params.taskId,
-        userId: session.user.id,
+        userId: verified.userId,
       },
       data: {
         isCompleted,
@@ -42,15 +47,19 @@ export async function DELETE(
   { params }: { params: { taskId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token');
+
+    if (!token) {
       return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
     }
+
+    const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
 
     await prisma.task.delete({
       where: {
         id: params.taskId,
-        userId: session.user.id,
+        userId: verified.userId,
       },
     });
     
