@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import BottomSheet from '@/components/BottomSheet'
-import WeeklyCalendar from '@/components/WeeklyCalendar'
-import { getTest1Tasks } from '@/constants/tasks'
+import BottomSheet from '../../../components/BottomSheet'
+import WeeklyCalendar from '../../../components/WeeklyCalendar'
+import { getTest1Tasks } from '../../../constants/tasks'
 
 const HOUSE_TASKS = getTest1Tasks()
 
