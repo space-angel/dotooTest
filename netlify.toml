@@ -1,12 +1,18 @@
 [build]
-  command = "npm install && npm run postinstall && npm run build"
+  command = "npm run build"
   publish = ".next"
 
 [build.environment]
-  NEXT_USE_NETLIFY_EDGE = "true"
+  NEXT_PUBLIC_RUNTIME_CONFIG = "true"
   NODE_VERSION = "20.11.0"
   NPM_VERSION = "10.2.4"
-  NODE_ENV = "production"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [functions]
-  node_bundler = "esbuild" 
+  node_bundler = "esbuild"
+  external_node_modules = ["@prisma/client", "@prisma/engines-version"]
+
+[build.processing]
+  skip_processing = true 
