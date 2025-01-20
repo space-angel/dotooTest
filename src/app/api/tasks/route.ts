@@ -22,9 +22,8 @@ export async function GET() {
       }
     })
 
-    return NextResponse.json({ tasks })
-  } catch (error) {
-    console.error('Tasks fetch error:', error)
+    return NextResponse.json({ tasks }, { status: 200 })
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch tasks" }, 
       { status: 500 }
@@ -49,7 +48,7 @@ export async function POST(request: Request) {
     try {
       const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string }
       userId = verified.userId
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { message: "유효하지 않은 인증 토큰입니다." },
         { status: 401 }
@@ -80,10 +79,9 @@ export async function POST(request: Request) {
       }
     })
 
-    return NextResponse.json(task)
+    return NextResponse.json(task, { status: 201 })
 
-  } catch (error) {
-    console.error('Task creation error:', error instanceof Error ? error.message : 'Unknown error')
+  } catch {
     return NextResponse.json(
       { message: "할일 생성에 실패했습니다." },
       { status: 500 }

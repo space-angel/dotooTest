@@ -58,16 +58,18 @@ export async function DELETE(
 ) {
   try {
     const taskId = context.params.taskId
-
+    
     const task = await prisma.task.delete({
       where: {
         id: taskId
       }
     })
 
-    return NextResponse.json(task)
-  } catch (err) {
-    console.error("Task deletion error:", err)
-    return new NextResponse("작업 삭제 중 오류가 발생했습니다.", { status: 500 })
+    return NextResponse.json(task, { status: 200 })
+  } catch {
+    return NextResponse.json(
+      { message: "작업 삭제 중 오류가 발생했습니다." },
+      { status: 500 }
+    )
   }
 } 
