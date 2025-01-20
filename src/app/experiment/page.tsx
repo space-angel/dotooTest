@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format, startOfDay, isSameDay } from 'date-fns'
@@ -27,7 +26,6 @@ interface TasksBySpace {
 }
 
 export default function ExperimentPage() {
-  const router = useRouter()
   const [tasks, setTasks] = useState<TasksBySpace>({})
   const [selectedTask, setSelectedTask] = useState<string | null>(null)
   const [selectedUsers, setSelectedUsers] = useState<string[]>([])
@@ -40,22 +38,31 @@ export default function ExperimentPage() {
           'x-environment': 'test2'
         }
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch tasks');
+      }
+      
       const data: TaskResponse = await response.json();
       console.log('API 응답 데이터:', data);
       
-      // TasksBySpace 형식에 맞게 데이터 구조화
       const formattedTasks: TasksBySpace = {};
+      
       if (data.tasks) {
         data.tasks.forEach(task => {
           const spaceId = task.spaceId || 'default';
           if (!formattedTasks[spaceId]) {
             formattedTasks[spaceId] = [];
           }
+          
+          // taskType에서 level 추출 (예: "living-min" -> "MIN")
+          const level = task.taskType?.split('-')[1]?.toUpperCase() || 'UNKNOWN';
+          
           formattedTasks[spaceId].push({
             id: task.id,
             title: task.title,
             spaceId: task.spaceId,
-            level: task.taskType?.split('-')[1]?.toUpperCase() || 'UNKNOWN',
+            level,
             taskType: task.taskType,
             dueDate: task.dueDate,
             assignedTo: task.assignedTo
@@ -88,12 +95,12 @@ export default function ExperimentPage() {
 
   console.log('선택된 날짜의 tasks:', selectedDateTasks);
 
-  const handleDateSelect = (date: Date) => {
+  const _handleDateSelect = (date: Date) => {
     setSelectedDate(date);
     console.log('Selected new date:', format(date, 'yyyy-MM-dd'));
   };
 
-  const handleSaveTask = async () => {
+  const _handleSaveTask = async () => {
     if (!selectedTask || !selectedDate) return;
 
     const [spaceId, level] = selectedTask.split('-');
@@ -135,7 +142,7 @@ export default function ExperimentPage() {
     }
   };
 
-  const handleDeleteTask = async (taskId: string) => {
+  const _handleDeleteTask = async (taskId: string) => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'DELETE',

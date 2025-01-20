@@ -1,103 +1,69 @@
-import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { headers } from 'next/headers'
-import prisma from "@/lib/prisma"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-import { Prisma } from "@prisma/client"
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
+import prisma from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
+
+// Session 타입 정의 추가
+interface SessionUser {
+  user: {
+    id: string;
+    email?: string;
+    name?: string;
+  }
+}
 
 // GET 요청 처리
-export async function GET(req: Request) {
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "로그인이 필요합니다." },
-        { status: 401 }
-      )
-    }
-
-    const environment = req.headers.get('x-environment') || 'test1'
-
     const tasks = await prisma.task.findMany({
       where: {
         userId: session.user.id,
-        environment: environment
+        environment: 'test2'  // test2 환경의 태스크만 가져오기
       },
       include: {
-        space: true
-      },
-      orderBy: {
-        dueDate: 'asc'
+        space: true  // space 정보도 함께 가져오기
       }
-    })
+    });
 
-    return NextResponse.json({ tasks })
+    return NextResponse.json({ tasks });  // tasks 배열을 객체로 감싸서 반환
   } catch (error) {
-    console.error("할일 조회 에러:", error)
     return NextResponse.json(
-      { error: "할일을 조회하는 중 오류가 발생했습니다." },
+      { error: "Failed to fetch tasks" },
       { status: 500 }
-    )
+    );
   }
 }
 
 // POST 요청 처리
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "로그인이 필요합니다." },
-        { status: 401 }
-      )
-    }
+    const body = await request.json();
 
-    const headersList = await headers()
-    const environment = headersList.get('x-environment')
-    
-    // 환경 값 검증
-    if (environment !== 'test1' && environment !== 'test2') {
-      return NextResponse.json(
-        { error: "유효하지 않은 환경입니다." },
-        { status: 400 }
-      )
-    }
-
-    const body = await req.json()
-    
     const task = await prisma.task.create({
       data: {
-        title: body.title,
-        description: body.description || "",
-        dueDate: new Date(body.dueDate),
-        assignedTo: body.assignedTo || "",
-        spaceId: body.spaceId,
-        taskType: body.taskType,
-        userId: session.user.id,
-        environment: environment
-      },
-      include: {
-        space: true
+        ...body,
+        userId: session.user.id
       }
-    })
+    });
 
-    console.log('Created task:', {
-      id: task.id,
-      title: task.title,
-      environment: task.environment
-    })
-
-    return NextResponse.json({ 
-      message: "할일이 성공적으로 추가되었습니다.",
-      task 
-    })
+    return NextResponse.json(task);
   } catch (error) {
-    console.error("할일 생성 에러:", error)
     return NextResponse.json(
-      { error: "할일을 생성하는 중 오류가 발생했습니다." },
+      { error: "Failed to create task" },
       { status: 500 }
-    )
+    );
   }
 } 

@@ -11,19 +11,6 @@ interface PageProps {
   }>
 }
 
-interface Task {
-  id: string
-  spaceId: string
-  level: string
-  title: string
-}
-
-interface User {
-  id: string
-  name: string
-  image: string | null
-}
-
 export default function NewTaskPage({ params }: PageProps) {
   const { spaceId } = use(params)
   const router = useRouter()

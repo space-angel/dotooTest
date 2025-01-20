@@ -1,25 +1,35 @@
-import NextAuth, { AuthOptions, DefaultSession, User } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import prisma from "@/lib/prisma"
-import { compare } from "bcryptjs"
+import NextAuth from "next-auth";
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import prisma from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
-// 세션 타입 확장
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("NEXTAUTH_SECRET is not defined");
+}
+
+interface UserWithAuth {
+  id: string;
+  email: string;
+  name: string;
+}
+
 declare module "next-auth" {
   interface Session {
-    user: {
-      id: string
-    } & DefaultSession["user"]
+    user: UserWithAuth;
   }
+  interface User extends UserWithAuth {}
 }
 
-// JWT 토큰 타입 확장
 declare module "next-auth/jwt" {
   interface JWT {
-    id: string
+    id: string;
+    email: string;
+    name: string;
   }
 }
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -27,64 +37,63 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials): Promise<User | null> {
-        try {
-          if (!credentials?.email || !credentials?.password) {
-            console.log('인증 실패: 자격 증명 누락')
-            return null
-          }
-
-          const user = await prisma.user.findUnique({
-            where: {
-              email: credentials.email
-            }
-          })
-
-          if (!user || !user.password) {
-            console.log('인증 실패: 사용자 없음')
-            return null
-          }
-
-          const isValid = await compare(credentials.password, user.password)
-
-          if (!isValid) {
-            console.log('인증 실패: 비밀번호 불일치')
-            return null
-          }
-
-          console.log('인증 성공:', user.email)
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name || ""
-          }
-        } catch (error) {
-          console.error('인증 에러:', error)
-          return null
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
+
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email
+          }
+        });
+
+        if (!user || !user.password) {
+          return null;
+        }
+
+        const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+
+        if (!passwordMatch) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name || ""
+        };
       }
     })
   ],
-  pages: {
-    signIn: '/login',
-    error: '/login'
-  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id
+      if (token && session.user) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
       }
-      return session
+      return session;
     }
   },
-  secret: process.env.NEXTAUTH_SECRET
-}
+  pages: {
+    signIn: "/login",
+  },
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
+};
 
-const handler = NextAuth(authOptions)
-export { handler as GET, handler as POST } 
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST }; 

@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const registered = searchParams.get('registered')
   const [error, setError] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -59,8 +61,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[680px] flex items-center px-4">
-      <div className="w-full space-y-6">
+    <div className="min-h-[680px] flex items-center justify-center px-4">
+      <div className="max-w-md w-full space-y-8">
+        {registered && (
+          <div className="bg-green-50 text-green-600 p-4 rounded-md text-sm">
+            회원가입이 완료되었습니다. 로그인해주세요.
+          </div>
+        )}
         <div>
           <h2 className="text-2xl font-bold text-center">로그인</h2>
         </div>
@@ -89,13 +96,26 @@ export default function LoginPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-2.5 text-sm font-medium text-white bg-blue-600 rounded-md disabled:opacity-50"
-          >
-            {isLoading ? '로그인 중...' : '로그인'}
-          </button>
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full py-2.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {isLoading ? '처리중...' : '로그인'}
+            </button>
+          </div>
+
+          <div className="mt-4">
+            <Link
+              href="/register"
+              className="w-full block py-2.5 text-sm font-medium text-center text-blue-600 bg-white border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              회원가입
+            </Link>
+          </div>
         </form>
       </div>
     </div>

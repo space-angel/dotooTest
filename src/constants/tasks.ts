@@ -98,4 +98,13 @@ export const SPACES: Space[] = [
     name: '개인',
     color: '#3357FF'
   }
-]; 
+];
+
+interface TaskParams {
+  id: string;
+  title: string;
+  // ... 필요한 다른 속성들 추가
+}
+
+// before: (param: any) => { ... }
+// after: (param: TaskParams) => { ... } 

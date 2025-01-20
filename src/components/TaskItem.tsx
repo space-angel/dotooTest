@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import TaskToggleButton from './TaskToggleButton'
-import { Space, FamilyMember } from '@/types/task'
+import { Space } from '@/types/task'
 import useOutsideClick from '@/hooks/useOutsideClick';
-import { format } from 'date-fns';
 
 interface TaskItemProps {
   id: string;
   title: string;
   assignedTo: string | null;
-  dueDate: string;
   isCompleted: boolean;
   space: Space | null;
   onToggleComplete?: (taskId: string) => Promise<void>;
@@ -19,7 +17,6 @@ export default function TaskItem({
   id,
   title, 
   assignedTo, 
-  dueDate,
   isCompleted = false,
   space,
   onToggleComplete,
