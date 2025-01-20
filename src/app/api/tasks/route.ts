@@ -13,7 +13,7 @@ interface SessionUser {
 }
 
 // GET 요청 처리
-export async function GET(request: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user) {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({ tasks });  // tasks 배열을 객체로 감싸서 반환
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch tasks" },
       { status: 500 }
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(task);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to create task" },
       { status: 500 }

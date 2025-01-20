@@ -29,7 +29,7 @@ export default function ExperimentPage() {
   const [tasks, setTasks] = useState<TasksBySpace>({})
   const [selectedTask, setSelectedTask] = useState<string | null>(null)
   const [selectedUsers, setSelectedUsers] = useState<string[]>([])
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const [selectedDate, setSelectedDate] = useState(new Date())
 
   const fetchTasks = async () => {
     try {
