@@ -1,8 +1,10 @@
 'use client'
 
 import { useRef, useState } from 'react';
+import { format } from 'date-fns';
+import { useOutsideClick } from '../hooks/useOutsideClick';
+import type { Task } from '../types/task';
 import TaskToggleButton from './TaskToggleButton';
-import useOutsideClick from '@/hooks/useOutsideClick';
 
 interface TaskItemProps {
   id: string;
