@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && npm install tailwindcss postcss autoprefixer && npx prisma generate && npx prisma migrate deploy && SKIP_TYPE_CHECK=true next build"
+  command = "npm ci && npx prisma generate && npx prisma migrate deploy && next build"
   publish = ".next"
 
 [[plugins]]
@@ -9,14 +9,7 @@
   NEXT_USE_NETLIFY_EDGE = "true"
   NODE_VERSION = "20.11.0"
   NPM_VERSION = "10.2.4"
-  NPM_FLAGS = "--legacy-peer-deps"
-  SKIP_TYPE_CHECK = "true"
+  NODE_ENV = "production"
 
 [functions]
-  node_bundler = "esbuild"
-
-[context.production]
-  command = "npm install && npm install tailwindcss postcss autoprefixer && npx prisma generate && npx prisma migrate deploy && next build"
-
-[context.production.environment]
-  NODE_ENV = "production" 
+  node_bundler = "esbuild" 
