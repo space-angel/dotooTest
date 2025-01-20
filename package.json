@@ -2,19 +2,18 @@
   "name": "dotoo-ut",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://space-angel.github.io/dotooTest/",
   "engines": {
     "node": ">=20.11.0",
     "npm": ">=10.2.4"
   },
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "netlify-deploy": "next build",
     "predeploy": "npm run build",
-    "deploy": "touch out/.nojekyll && gh-pages -d out --dotfiles"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
