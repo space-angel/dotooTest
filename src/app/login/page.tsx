@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function LoginPage() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const registered = searchParams.get('registered')
   const [error, setError] = useState<string>('')

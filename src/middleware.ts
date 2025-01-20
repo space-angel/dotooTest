@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // 모든 경로 허용
-export function middleware(_request: NextRequest) {
+export function middleware(_req: NextRequest) {
   return NextResponse.next();
 }
 

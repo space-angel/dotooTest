@@ -10,28 +10,6 @@ import Navbar from '@/components/Navbar'
 import WeeklyCalendar from '@/components/WeeklyCalendar'
 import type { ExperimentTask } from '@/types/task'
 
-interface TasksResponse {
-  tasks: Task[]
-  spaces: Space[]
-}
-
-// API 응답 데이터 타입 정의
-interface TaskResponse {
-  tasks: Array<{
-    id: string;
-    title: string;
-    spaceId: string;
-    taskType: string;
-    dueDate: string;
-    assignedTo: string;
-  }>;
-}
-
-// TasksBySpace 타입 정의
-interface TasksBySpace {
-  [key: string]: ExperimentTask[];
-}
-
 export default function ExperimentPage() {
   const router = useRouter()
   const [selectedDate, setSelectedDate] = useState(new Date())

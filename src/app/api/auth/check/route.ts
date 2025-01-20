@@ -1,8 +1,4 @@
 import { NextResponse } from "next/server";
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export async function GET() {
   try {
