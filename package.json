@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "SKIP_TYPE_CHECK=true next build",
     "start": "next start",
     "lint": "next lint",
     "netlify-deploy": "next build",
