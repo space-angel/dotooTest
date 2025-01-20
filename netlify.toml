@@ -1,5 +1,5 @@
 [build]
-  command = "prisma generate && next build"
+  command = "npm install && npx prisma generate && next build"
   publish = ".next"
 
 [[plugins]]
@@ -15,7 +15,7 @@
   node_bundler = "esbuild"
 
 [context.production]
-  command = "npm run build"
+  command = "npm install && npx prisma generate && next build"
 
 [context.production.environment]
   NODE_ENV = "production" 
