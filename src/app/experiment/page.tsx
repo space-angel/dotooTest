@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { format, startOfDay, isSameDay } from 'date-fns'
 import { EXPERIMENT2_SPACES, EXPERIMENT2_USERS } from '@/constants/experiment2'
@@ -26,72 +27,61 @@ interface TasksBySpace {
 }
 
 export default function ExperimentPage() {
-  const [tasks, setTasks] = useState<TasksBySpace>({})
-  const [selectedTask, setSelectedTask] = useState<string | null>(null)
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+  const router = useRouter()
   const [selectedDate, setSelectedDate] = useState(new Date())
-
-  const fetchTasks = async () => {
-    try {
-      const response = await fetch('/api/tasks', {
-        headers: {
-          'x-environment': 'test2'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch tasks');
-      }
-      
-      const data: TaskResponse = await response.json();
-      console.log('API 응답 데이터:', data);
-      
-      const formattedTasks: TasksBySpace = {};
-      
-      if (data.tasks) {
-        data.tasks.forEach(task => {
-          const spaceId = task.spaceId || 'default';
-          if (!formattedTasks[spaceId]) {
-            formattedTasks[spaceId] = [];
-          }
-          
-          // taskType에서 level 추출 (예: "living-min" -> "MIN")
-          const level = task.taskType?.split('-')[1]?.toUpperCase() || 'UNKNOWN';
-          
-          formattedTasks[spaceId].push({
-            id: task.id,
-            title: task.title,
-            spaceId: task.spaceId,
-            level,
-            taskType: task.taskType,
-            dueDate: task.dueDate,
-            assignedTo: task.assignedTo
-          });
-        });
-      }
-      
-      console.log('변환된 tasks:', formattedTasks);
-      setTasks(formattedTasks);
-    } catch (error) {
-      console.error('tasks 가져오기 실패:', error);
-    }
-  };
+  // 나중에 사용할 상태들은 주석 처리
+  // const [selectedTask, setSelectedTask] = useState<string | null>(null)
+  // const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+  const [tasks, setTasks] = useState<ExperimentTask[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('/api/tasks', {
+          credentials: 'include'
+        })
+
+        if (response.status === 401) {
+          router.push('/login')
+          return
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch tasks')
+        }
+
+        const data = await response.json()
+        setTasks(data.tasks || [])
+      } catch (error) {
+        console.error('tasks 가져오기 실패:', error)
+        setError('할 일을 불러오는데 실패했습니다.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchTasks()
+  }, [router])
+
+  if (isLoading) {
+    return <div>로딩 중...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
 
   // 선택된 날짜의 tasks 필터링
-  const selectedDateTasks = Object.values(tasks)
-    .flat()
-    .filter(task => {
-      if (!task?.dueDate) return false;
-      
-      // timezone을 고려한 날짜 비교
-      const taskDate = startOfDay(new Date(task.dueDate));
-      const compareDate = startOfDay(selectedDate);
-      return isSameDay(taskDate, compareDate);
-    });
+  const selectedDateTasks = tasks.filter(task => {
+    if (!task?.dueDate) return false;
+    
+    // timezone을 고려한 날짜 비교
+    const taskDate = startOfDay(new Date(task.dueDate));
+    const compareDate = startOfDay(selectedDate);
+    return isSameDay(taskDate, compareDate);
+  });
 
   console.log('선택된 날짜의 tasks:', selectedDateTasks);
 

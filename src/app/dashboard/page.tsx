@@ -1,20 +1,10 @@
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import prisma from "@/lib/prisma"
 import DashboardView from "./DashboardView"
 import type { Task } from "@/types/task"
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
-  
-  if (!session?.user?.id) {
-    redirect('/login')
-  }
-
   const tasks = await prisma.task.findMany({
     where: {
-      userId: session.user.id,
       environment: 'test1'
     },
     include: {

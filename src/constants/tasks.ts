@@ -105,11 +105,5 @@ export const SPACES: Space[] = [
   }
 ];
 
-interface TaskParams {
-  id: string;
-  title: string;
-  // ... 필요한 다른 속성들 추가
-}
-
 // before: (param: any) => { ... }
 // after: (param: TaskParams) => { ... } 
