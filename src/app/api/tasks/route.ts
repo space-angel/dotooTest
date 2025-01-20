@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
 
 // Session 타입 정의 추가
 interface SessionUser {

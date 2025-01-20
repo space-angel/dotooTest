@@ -59,7 +59,12 @@ export const getTest1Tasks = () => {
 
 // 테스트2 환경용 변환 함수
 export const getTest2Tasks = () => {
-  const result: Record<string, any[]> = {}
+  const result: Record<string, Array<{
+    id: string;
+    spaceId: string;
+    level: string;
+    title: string;
+  }>> = {}
   
   Object.entries(TASK_PRESETS).forEach(([spaceId, space]) => {
     result[spaceId] = ['MIN', 'MORE', 'MAX'].map(level => ({
