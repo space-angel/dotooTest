@@ -17,10 +17,8 @@ export default async function ExperimentLayout({
   }
 
   try {
-    // JWT 토큰 검증
     jwt.verify(token.value, JWT_SECRET)
-  } catch (error) {
-    // 토큰이 유효하지 않으면 로그인 페이지로 리다이렉트
+  } catch {
     redirect('/login')
   }
 

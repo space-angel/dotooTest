@@ -10,12 +10,12 @@ export async function GET() {
     const token = cookieStore.get('auth-token')
 
     if (!token) {
-      return NextResponse.json({ authenticated: false }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const verified = jwt.verify(token.value, JWT_SECRET)
     return NextResponse.json({ authenticated: true, user: verified })
-  } catch (error) {
-    return NextResponse.json({ authenticated: false }, { status: 401 })
+  } catch {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 })
   }
 } 

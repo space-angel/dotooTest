@@ -41,7 +41,6 @@ export default function LoginPage() {
 
       if (data.success) {
         try {
-          // 직접 페이지 이동
           window.location.href = '/test-environment'
         } catch (error) {
           console.error('라우팅 에러:', error)

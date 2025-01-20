@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET 요청 처리
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const tasks = await prisma.task.findMany({
       where: {
