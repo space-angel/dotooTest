@@ -43,32 +43,21 @@ export async function PATCH(
 
 // DELETE 메서드
 export async function DELETE(
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: { taskId: string } }
 ) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token');
+    const taskId = params.taskId
 
-    if (!token) {
-      return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
-    }
-
-    const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
-
-    await prisma.task.delete({
+    const task = await prisma.task.delete({
       where: {
-        id: params.taskId,
-        userId: verified.userId,
-      },
-    });
-    
-    return NextResponse.json({ message: '할일이 삭제되었습니다.' });
-  } catch (error) {
-    console.error('할일 삭제 중 오류:', error);
-    return NextResponse.json(
-      { error: "할일을 삭제하는 중 오류가 발생했습니다." },
-      { status: 500 }
-    );
+        id: taskId
+      }
+    })
+
+    return NextResponse.json(task)
+  } catch (err) {
+    console.error("Task deletion error:", err)
+    return new NextResponse("작업 삭제 중 오류가 발생했습니다.", { status: 500 })
   }
 } 
