@@ -13,9 +13,6 @@ import type { ExperimentTask } from '@/types/task'
 export default function ExperimentPage() {
   const router = useRouter()
   const [selectedDate, setSelectedDate] = useState(new Date())
-  // 나중에 사용할 상태들은 주석 처리
-  // const [selectedTask, setSelectedTask] = useState<string | null>(null)
-  // const [selectedUsers, setSelectedUsers] = useState<string[]>([])
   const [tasks, setTasks] = useState<ExperimentTask[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)

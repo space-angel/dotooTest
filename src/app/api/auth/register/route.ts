@@ -49,10 +49,7 @@ export async function POST(request: NextRequest) {
     const { password: _, ...userWithoutPassword } = user;
     
     return NextResponse.json(userWithoutPassword);
-  } catch {
-    return NextResponse.json(
-      { message: '회원가입에 실패했습니다.' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return NextResponse.json({ error: "Something went wrong!" }, { status: 500 });
   }
 } 
