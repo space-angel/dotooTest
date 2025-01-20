@@ -11,16 +11,15 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "netlify-deploy": "next build",
-    "postbuild": "next-sitemap"
+    "netlify-deploy": "next build"
   },
-  
   "dependencies": {
     "@prisma/client": "^6.2.1",
     "bcryptjs": "^2.4.3",
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.1.5",
+    "next-sitemap": "^4.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -40,8 +39,12 @@
   },
   "eslintConfig": {
     "rules": {
-      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ]
     }
   }
 }
-
