@@ -41,39 +41,72 @@ export default function NewTaskPage({ params }: PageProps) {
   }
 
   const handleSave = async () => {
-    if (!selectedLevel || !dateParam || !selectedUser) return
+    if (!selectedLevel || !dateParam || !selectedUser) {
+      alert('모든 필수 항목을 선택해주세요.')
+      return
+    }
 
     try {
       const task = tasks.find(t => t.level === selectedLevel)
-      if (!task) return
+      if (!task) {
+        alert('선택된 할일 정보를 찾을 수 없습니다.')
+        return
+      }
+
+      const payload = {
+        title: task.title,
+        spaceId: task.spaceId,
+        taskType: task.id,
+        assignedTo: selectedUser,
+        dueDate: `${dateParam}T00:00:00.000Z`,
+        environment: 'test2'
+      }
+
+      // 페이로드 유효성 검사 추가
+      if (!payload.title || !payload.spaceId || !payload.taskType || !payload.assignedTo || !payload.dueDate) {
+        console.error('유효하지 않은 페이로드:', payload)
+        alert('필수 데이터가 누락되었습니다.')
+        return
+      }
+
+      console.log('전송하는 데이터:', JSON.stringify(payload)) // stringify된 데이터 확인
 
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'x-environment': 'test2'
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          title: task.title,
-          spaceId: task.spaceId,
-          taskType: task.id,
-          assignedTo: selectedUser,
-          dueDate: `${dateParam}T00:00:00.000Z`,
-          environment: 'test2'
-        })
+        body: JSON.stringify(payload)
       })
 
+      let data
+      let errorMessage = '할일을 저장하는 중 오류가 발생했습니다.'
+
+      const textResponse = await response.text()
+      console.log('서버 응답 텍스트:', textResponse)
+
+      if (textResponse) {
+        try {
+          data = JSON.parse(textResponse)
+        } catch (e) {
+          console.error('JSON 파싱 에러:', e)
+        }
+      }
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null)
-        console.error('서버 응답:', errorData)
-        throw new Error('할일 저장 실패')
+        errorMessage = data?.message || errorMessage
+        console.error('서버 응답 상태:', response.status)
+        console.error('에러 메시지:', errorMessage)
+        alert(errorMessage)
+        return
       }
 
       router.push('/experiment')
       router.refresh()
     } catch (error) {
       console.error('Error saving task:', error)
-      throw error
+      alert('네트워크 오류가 발생했습니다. 다시 시도해 주세요.')
     }
   }
 

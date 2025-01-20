@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
-import { type NextApiRequest } from "next"
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET is not defined in environment variables')
+}
+
+const JWT_SECRET = process.env.JWT_SECRET
 
 interface RouteParams {
   params: {
