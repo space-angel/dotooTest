@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+'use client'
+
+import { useState, useRef,useEffect } from 'react';
 import TaskToggleButton from './TaskToggleButton'
 import { Space } from '@/types/task'
-import useOutsideClick from '@/hooks/useOutsideClick';
 
 interface TaskItemProps {
   id: string;

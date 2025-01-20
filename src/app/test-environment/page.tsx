@@ -1,12 +1,10 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Navbar from '@/components/Navbar'
 
 export default function TestEnvironmentSelect() {
   const [selectedEnv, setSelectedEnv] = useState('')
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
