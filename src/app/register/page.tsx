@@ -39,7 +39,11 @@ export default function RegisterPage() {
       }
 
       router.push('/login?registered=true')
-    } catch (error) {
+    } catch (
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      error
+    ) {
       if (error instanceof Error) {
         setError(error.message)
       } else {

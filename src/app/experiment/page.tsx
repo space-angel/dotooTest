@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Task, Space } from '@/types/task'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { format, startOfDay, isSameDay } from 'date-fns'
