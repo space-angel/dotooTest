@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { type NextApiRequest } from "next"
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+interface RouteParams {
+  params: {
+    taskId: string
+  }
+}
 
 // PATCH 메서드
 export async function PATCH(
@@ -43,11 +50,11 @@ export async function PATCH(
 
 // DELETE 메서드
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { taskId: string } }
+  _req: NextRequest,
+  context: RouteParams
 ) {
   try {
-    const taskId = params.taskId
+    const taskId = context.params.taskId
 
     const task = await prisma.task.delete({
       where: {
