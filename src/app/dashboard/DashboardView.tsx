@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { isSameDay } from 'date-fns'
 import Link from 'next/link'
-import Navbar from '@/components/Navbar'
-import WeeklyCalendar from '@/components/WeeklyCalendar'
-import TaskItem from '@/components/TaskItem'
+import Navbar from '../../components/Navbar'
+import WeeklyCalendar from '../../components/WeeklyCalendar'
+import TaskItem from '../../components/TaskItem'
 import type { Task } from '@/types/task'
 
 const FAMILY_MEMBERS = [
