@@ -17,6 +17,7 @@
     "deploy": "touch out/.nojekyll && gh-pages -d out --dotfiles"
   },
   "dependencies": {
+    "@netlify/plugin-nextjs": "^5.9.3",
     "@prisma/client": "^6.2.1",
     "autoprefixer": "^10.0.1",
     "bcryptjs": "^2.4.3",
