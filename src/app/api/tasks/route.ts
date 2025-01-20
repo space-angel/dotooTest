@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import prisma  from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 import { TaskData } from '@/types/task'
@@ -13,6 +13,16 @@ const JWT_SECRET = process.env.JWT_SECRET
 // GET 요청 처리
 export async function GET() {
   try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get('auth-token')
+
+    if (!token) {
+      return NextResponse.json(
+        { message: "로그인이 필요합니다." },
+        { status: 401 }
+      )
+    }
+
     const tasks = await prisma.task.findMany({
       where: {
         environment: 'test2'
@@ -25,7 +35,7 @@ export async function GET() {
     return NextResponse.json({ tasks }, { status: 200 })
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch tasks" }, 
+      { message: "할일 목록을 가져오는데 실패했습니다." }, 
       { status: 500 }
     )
   }
@@ -63,7 +73,16 @@ export async function POST(request: Request) {
       )
     }
 
-    const payload = JSON.parse(text) as TaskData
+    let payload: TaskData
+    try {
+      payload = JSON.parse(text) as TaskData
+    } catch {
+      return NextResponse.json(
+        { message: "잘못된 JSON 형식입니다." },
+        { status: 400 }
+      )
+    }
+
     const { title, spaceId, taskType, assignedTo, dueDate, environment } = payload
 
     // Task 생성

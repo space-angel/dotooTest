@@ -17,35 +17,47 @@ interface RouteParams {
 
 // PATCH 메서드
 export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { taskId: string } }
+  request: NextRequest,
+  { params }: RouteParams
 ) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('auth-token');
 
     if (!token) {
-      return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+      return NextResponse.json(
+        { message: "로그인이 필요합니다." },
+        { status: 401 }
+      );
     }
 
-    const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
-    const { isCompleted } = await req.json();
+    let userId: string;
+    try {
+      const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
+      userId = verified.userId;
+    } catch {
+      return NextResponse.json(
+        { message: "유효하지 않은 인증 토큰입니다." },
+        { status: 401 }
+      );
+    }
 
-    const updatedTask = await prisma.task.update({
+    const { isCompleted } = await request.json();
+
+    const task = await prisma.task.update({
       where: {
         id: params.taskId,
-        userId: verified.userId,
+        userId
       },
       data: {
-        isCompleted,
-      },
+        isCompleted
+      }
     });
 
-    return NextResponse.json({ task: updatedTask });
-  } catch (error) {
-    console.error('할일 업데이트 중 오류:', error);
+    return NextResponse.json({ task }, { status: 200 });
+  } catch {
     return NextResponse.json(
-      { error: "할일을 업데이트하는 중 오류가 발생했습니다." },
+      { message: "할일 업데이트에 실패했습니다." },
       { status: 500 }
     );
   }
@@ -53,23 +65,46 @@ export async function PATCH(
 
 // DELETE 메서드
 export async function DELETE(
-  _req: NextRequest,
-  context: RouteParams
+  _request: NextRequest,
+  { params }: RouteParams
 ) {
   try {
-    const taskId = context.params.taskId
-    
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token');
+
+    if (!token) {
+      return NextResponse.json(
+        { message: "로그인이 필요합니다." },
+        { status: 401 }
+      );
+    }
+
+    let userId: string;
+    try {
+      const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
+      userId = verified.userId;
+    } catch {
+      return NextResponse.json(
+        { message: "유효하지 않은 인증 토큰입니다." },
+        { status: 401 }
+      );
+    }
+
     const task = await prisma.task.delete({
       where: {
-        id: taskId
+        id: params.taskId,
+        userId
       }
-    })
+    });
 
-    return NextResponse.json(task, { status: 200 })
+    return NextResponse.json(
+      { message: "할일이 삭제되었습니다.", task },
+      { status: 200 }
+    );
   } catch {
     return NextResponse.json(
-      { message: "작업 삭제 중 오류가 발생했습니다." },
+      { message: "할일 삭제에 실패했습니다." },
       { status: 500 }
-    )
+    );
   }
 } 
