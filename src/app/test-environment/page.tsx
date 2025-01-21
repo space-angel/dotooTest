@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import Navbar from '../../components/Navbar'
+import { useRouter } from 'next/navigation'
 
 export default function TestEnvironmentSelect() {
   const [selectedEnv, setSelectedEnv] = useState('')
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -17,10 +19,27 @@ export default function TestEnvironmentSelect() {
       sessionStorage.setItem('testEnvironment', selectedEnv)
       console.log('페이지 이동 시도:', selectedEnv === 'test1' ? '/dashboard' : '/experiment')
       
-      window.location.href = selectedEnv === 'test1' ? '/dashboard' : '/experiment'
+      if (selectedEnv === 'test1') {
+        router.push('/dashboard')
+      } else if (selectedEnv === 'test2') {
+        router.push('/experiment')
+      }
     } catch (error) {
       console.error('라우팅 에러:', error)
       alert('페이지 이동 중 오류가 발생했습니다.')
+    }
+  }
+
+  const handleExperimentSelect = async (experimentId: number) => {
+    try {
+      // 인증 체크 없이 바로 실험 페이지로 이동
+      if (experimentId === 1) {
+        router.push('/experiment/1')
+      } else if (experimentId === 2) {
+        router.push('/experiment/2')
+      }
+    } catch (error) {
+      console.error('Error:', error)
     }
   }
 

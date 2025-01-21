@@ -19,14 +19,7 @@ export default function ExperimentPage() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch('/api/tasks', {
-          credentials: 'include'
-        })
-
-        if (response.status === 401) {
-          router.push('/login')
-          return
-        }
+        const response = await fetch('/api/tasks')
 
         if (!response.ok) {
           throw new Error('Failed to fetch tasks')
@@ -43,7 +36,7 @@ export default function ExperimentPage() {
     }
 
     fetchTasks()
-  }, [router])
+  }, [])
 
   if (isLoading) {
     return <div>로딩 중...</div>
