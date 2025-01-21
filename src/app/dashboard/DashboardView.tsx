@@ -83,6 +83,22 @@ export default function DashboardView({ initialTasks }: DashboardViewProps) {
     }
   }
 
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch('/api/tasks?environment=test1')
+      console.log('대시보드 Task 조회 응답:', await response.clone().json())
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch tasks')
+      }
+
+      const data = await response.json()
+      setTasks(data.tasks || [])
+    } catch (error) {
+      console.error('대시보드 Task 조회 실패:', error)
+    }
+  }
+
   return (
     <div className="flex flex-col h-[680px] max-w-[390px] mx-auto relative">
       <Navbar />

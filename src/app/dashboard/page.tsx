@@ -23,32 +23,39 @@ interface PrismaTask {
 }
 
 export default async function DashboardPage() {
-  const tasks = await prisma.task.findMany({
-    where: {
-      environment: 'test1'
-    },
-    include: {
-      space: true
-    },
-    orderBy: {
-      dueDate: 'asc'
-    }
-  })
+  try {
+    const tasks = await prisma.task.findMany({
+      where: {
+        environment: 'test1'
+      },
+      include: {
+        space: true
+      },
+      orderBy: {
+        dueDate: 'asc'
+      }
+    })
 
-  const serializedTasks: Task[] = tasks.map((task: PrismaTask) => ({
-    id: task.id,
-    title: task.title,
-    description: task.description,
-    dueDate: task.dueDate.toISOString(),
-    isCompleted: task.isCompleted,
-    assignedTo: task.assignedTo,
-    userId: task.userId,
-    spaceId: task.spaceId,
-    taskType: task.taskType,
-    space: task.space,
-    createdAt: task.createdAt,
-    updatedAt: task.updatedAt
-  }))
+    console.log('대시보드 초기 Task 수:', tasks.length)
 
-  return <DashboardView initialTasks={serializedTasks} />
+    const serializedTasks: Task[] = tasks.map((task: PrismaTask) => ({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      dueDate: task.dueDate.toISOString(),
+      isCompleted: task.isCompleted,
+      assignedTo: task.assignedTo,
+      userId: task.userId,
+      spaceId: task.spaceId,
+      taskType: task.taskType,
+      space: task.space,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt
+    }))
+
+    return <DashboardView initialTasks={serializedTasks} />
+  } catch (error) {
+    console.error('대시보드 페이지 로드 중 오류:', error)
+    throw error
+  }
 }  

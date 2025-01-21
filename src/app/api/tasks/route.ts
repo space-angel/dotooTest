@@ -3,9 +3,17 @@ import prisma from '../../../lib/prisma'
 import { authenticate } from '../middleware/auth'
 
 // GET 요청 처리
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const environment = searchParams.get('environment') || 'test1'
+
+    console.log('조회하는 환경:', environment)
+
     const tasks = await prisma.task.findMany({
+      where: {
+        environment
+      },
       include: {
         space: true,
       },
@@ -13,6 +21,8 @@ export async function GET() {
         createdAt: 'desc',
       },
     })
+
+    console.log(`${environment} 환경의 Task 수:`, tasks.length)
 
     return NextResponse.json({ tasks })
   } catch (error) {
@@ -29,12 +39,22 @@ export async function POST(request: Request) {
   try {
     const userId = await authenticate()
     const body = await request.json()
+    
+    console.log('받은 Task 데이터:', body)
+
     const { title, description, dueDate, assignedTo, spaceId, taskType, environment } = body
 
-    // 필수 필드 검증
-    if (!title || !dueDate || !spaceId || !environment) {
+    // 필수 필드 검증 및 로깅
+    const missingFields = []
+    if (!title) missingFields.push('title')
+    if (!dueDate) missingFields.push('dueDate')
+    if (!spaceId) missingFields.push('spaceId')
+    if (!environment) missingFields.push('environment')
+
+    if (missingFields.length > 0) {
+      console.log('누락된 필드들:', missingFields)
       return NextResponse.json(
-        { error: "필수 정보가 누락되었습니다." },
+        { error: `필수 정보가 누락되었습니다: ${missingFields.join(', ')}` },
         { status: 400 }
       )
     }
@@ -48,7 +68,7 @@ export async function POST(request: Request) {
         assignedTo,
         spaceId,
         taskType,
-        environment,
+        environment: environment || 'test1',
         userId,
         isCompleted: false,
       },
@@ -57,11 +77,16 @@ export async function POST(request: Request) {
       },
     })
 
+    console.log('생성된 Task:', task)
+
     return NextResponse.json({ task })
   } catch (error) {
-    console.error("Task 생성 중 오류:", error)
+    console.error("Task 생성 중 상세 오류:", error)
     return NextResponse.json(
-      { error: "Task 생성에 실패했습니다." },
+      { 
+        error: "Task 생성에 실패했습니다.",
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     )
   }
