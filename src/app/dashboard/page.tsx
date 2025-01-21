@@ -15,7 +15,7 @@ export default async function DashboardPage() {
     }
   })
 
-  const serializedTasks: Task[] = tasks.map(task => ({
+  const serializedTasks: Task[] = tasks.map((task: any) => ({
     id: task.id,
     title: task.title,
     description: task.description,
