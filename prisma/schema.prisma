@@ -37,7 +37,7 @@ model Task {
   updatedAt   DateTime @updatedAt
   spaceId     String
   taskType    String?
-  environment String @default("test1")
+  environment String   @default("test1")
   space       Space    @relation(fields: [spaceId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
 }
