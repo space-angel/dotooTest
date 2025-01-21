@@ -79,3 +79,29 @@ export async function GET(
     );
   }
 }
+
+// DELETE 메서드 추가
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ taskId: string }> }
+) {
+  try {
+    const userId = await authenticate();
+    const { taskId } = await params;
+
+    const task = await prisma.task.delete({
+      where: {
+        id: taskId,
+        userId,
+      },
+    });
+
+    return NextResponse.json({ message: "할일이 삭제되었습니다.", task });
+  } catch (error) {
+    console.error("Task 삭제 중 오류:", error);
+    return NextResponse.json(
+      { message: "할일 삭제에 실패했습니다." },
+      { status: 500 }
+    );
+  }
+}
