@@ -1,24 +1,24 @@
 import { NextResponse } from 'next/server'
 import prisma from '../../../lib/prisma'
 import { authenticate } from '../middleware/auth'
-import { TaskData } from '@/types/task'
 
 // GET 요청 처리
 export async function GET() {
   try {
     const tasks = await prisma.task.findMany({
-      where: {
-        environment: 'test2'
-      },
       include: {
-        space: true
-      }
+        space: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
 
-    return NextResponse.json({ tasks }, { status: 200 })
-  } catch {
+    return NextResponse.json({ tasks })
+  } catch (error) {
+    console.error("Tasks 조회 중 오류:", error)
     return NextResponse.json(
-      { message: "할일 목록을 가져오는데 실패했습니다." }, 
+      { error: "Tasks 조회에 실패했습니다." },
       { status: 500 }
     )
   }
@@ -27,39 +27,42 @@ export async function GET() {
 // POST 요청 처리
 export async function POST(request: Request) {
   try {
-    const userId = await authenticate();  // 인증된 사용자 ID 가져오기
-    const payload = (await request.json()) as TaskData;
-    
-    if (!payload.title || !payload.spaceId || !payload.taskType || !payload.dueDate || !payload.environment) {
+    const userId = await authenticate()
+    const body = await request.json()
+    const { title, description, dueDate, assignedTo, spaceId, taskType, environment } = body
+
+    // 필수 필드 검증
+    if (!title || !dueDate || !spaceId || !environment) {
       return NextResponse.json(
-        { message: "필수 필드가 누락되었습니다." },
+        { error: "필수 정보가 누락되었습니다." },
         { status: 400 }
-      );
+      )
     }
 
+    // Task 생성
     const task = await prisma.task.create({
       data: {
-        title: payload.title,
-        spaceId: payload.spaceId,
-        taskType: payload.taskType,
-        assignedTo: payload.assignedTo ?? null,
-        dueDate: new Date(payload.dueDate),
-        environment: payload.environment,
-        description: payload.description ?? null,
-        userId: userId,  // 인증된 사용자 ID 사용
-        isCompleted: false
+        title,
+        description: description || "",
+        dueDate: new Date(dueDate),
+        assignedTo,
+        spaceId,
+        taskType,
+        environment,
+        userId,
+        isCompleted: false,
       },
       include: {
-        space: true
-      }
-    });
+        space: true,
+      },
+    })
 
-    return NextResponse.json(task, { status: 201 });
+    return NextResponse.json({ task })
   } catch (error) {
-    console.error('Task 생성 상세 에러:', error);
+    console.error("Task 생성 중 오류:", error)
     return NextResponse.json(
-      { message: "할일 생성에 실패했습니다.", error: error instanceof Error ? error.message : String(error) },
+      { error: "Task 생성에 실패했습니다." },
       { status: 500 }
-    );
+    )
   }
 } 
