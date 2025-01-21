@@ -76,6 +76,23 @@ export default function TestEnvironmentSelect() {
           </form>
         </div>
       </div>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">실험 환경 선택</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button
+            onClick={() => handleExperimentSelect(1)}
+            className="p-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            실험 1
+          </button>
+          <button
+            onClick={() => handleExperimentSelect(2)}
+            className="p-4 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            실험 2
+          </button>
+        </div>
+      </div>
     </>
   )
 } 

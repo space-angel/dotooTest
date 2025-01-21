@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { format, startOfDay, isSameDay } from 'date-fns'
 import { EXPERIMENT2_SPACES, EXPERIMENT2_USERS } from '../../constants/experiment2'
@@ -10,7 +9,6 @@ import WeeklyCalendar from '../../components/WeeklyCalendar'
 import type { ExperimentTask } from '../../types/task'
 
 export default function ExperimentPage() {
-  const router = useRouter()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [tasks, setTasks] = useState<ExperimentTask[]>([])
   const [error, setError] = useState<string | null>(null)
