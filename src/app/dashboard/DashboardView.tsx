@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { isSameDay } from 'date-fns'
 import Link from 'next/link'
 import Navbar from '../../components/Navbar'
@@ -34,6 +34,20 @@ export default function DashboardView({ initialTasks }: DashboardViewProps) {
     return isSameDayMatch && isAssigneeMatch
   })
 
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch('/api/tasks')
+      const data = await response.json()
+      setTasks(data.tasks)
+    } catch (error) {
+      console.error('할일 목록 가져오기 실패:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchTasks()
+  }, [])
+
   const handleToggleComplete = async (taskId: string) => {
     try {
       const task = tasks.find(t => t.id === taskId)
@@ -66,18 +80,12 @@ export default function DashboardView({ initialTasks }: DashboardViewProps) {
 
   const handleDelete = async (taskId: string) => {
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        }
       })
-
-      if (!res.ok) {
-        throw new Error('할일 삭제 실패')
+      if (response.ok) {
+        await fetchTasks()
       }
-
-      setTasks(prevTasks => prevTasks.filter(t => t.id !== taskId))
     } catch (error) {
       console.error('할일 삭제 중 오류:', error)
     }
