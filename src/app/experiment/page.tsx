@@ -17,7 +17,7 @@ export default function ExperimentPage() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch('/api/tasks')
+        const response = await fetch('/api/tasks?environment=test2')
 
         if (!response.ok) {
           throw new Error('Failed to fetch tasks')
