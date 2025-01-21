@@ -36,9 +36,9 @@ model Task {
   isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  spaceId     String?
+  spaceId     String
   taskType    String?
   environment String   @default("test1")
-  space       Space?   @relation(fields: [spaceId], references: [id])
+  space       Space    @relation(fields: [spaceId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
 }

@@ -3410,7 +3410,7 @@ export namespace Prisma {
     isCompleted: boolean
     createdAt: Date
     updatedAt: Date
-    spaceId: string | null
+    spaceId: string
     taskType: string | null
     environment: string
     _count: TaskCountAggregateOutputType | null
@@ -3445,7 +3445,7 @@ export namespace Prisma {
     spaceId?: boolean
     taskType?: boolean
     environment?: boolean
-    space?: boolean | Task$spaceArgs<ExtArgs>
+    space?: boolean | SpaceDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -3462,7 +3462,7 @@ export namespace Prisma {
     spaceId?: boolean
     taskType?: boolean
     environment?: boolean
-    space?: boolean | Task$spaceArgs<ExtArgs>
+    space?: boolean | SpaceDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -3479,7 +3479,7 @@ export namespace Prisma {
     spaceId?: boolean
     taskType?: boolean
     environment?: boolean
-    space?: boolean | Task$spaceArgs<ExtArgs>
+    space?: boolean | SpaceDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
 
@@ -3500,22 +3500,22 @@ export namespace Prisma {
 
   export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "dueDate" | "userId" | "assignedTo" | "isCompleted" | "createdAt" | "updatedAt" | "spaceId" | "taskType" | "environment", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    space?: boolean | Task$spaceArgs<ExtArgs>
+    space?: boolean | SpaceDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type TaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    space?: boolean | Task$spaceArgs<ExtArgs>
+    space?: boolean | SpaceDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type TaskIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    space?: boolean | Task$spaceArgs<ExtArgs>
+    space?: boolean | SpaceDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $TaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Task"
     objects: {
-      space: Prisma.$SpacePayload<ExtArgs> | null
+      space: Prisma.$SpacePayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -3528,7 +3528,7 @@ export namespace Prisma {
       isCompleted: boolean
       createdAt: Date
       updatedAt: Date
-      spaceId: string | null
+      spaceId: string
       taskType: string | null
       environment: string
     }, ExtArgs["result"]["task"]>
@@ -3925,7 +3925,7 @@ export namespace Prisma {
    */
   export interface Prisma__TaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    space<T extends Task$spaceArgs<ExtArgs> = {}>(args?: Subset<T, Task$spaceArgs<ExtArgs>>): Prisma__SpaceClient<$Result.GetResult<Prisma.$SpacePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    space<T extends SpaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SpaceDefaultArgs<ExtArgs>>): Prisma__SpaceClient<$Result.GetResult<Prisma.$SpacePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4352,25 +4352,6 @@ export namespace Prisma {
   }
 
   /**
-   * Task.space
-   */
-  export type Task$spaceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Space
-     */
-    select?: SpaceSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Space
-     */
-    omit?: SpaceOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: SpaceInclude<ExtArgs> | null
-    where?: SpaceWhereInput
-  }
-
-  /**
    * Task without action
    */
   export type TaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4647,10 +4628,10 @@ export namespace Prisma {
     isCompleted?: BoolFilter<"Task"> | boolean
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
-    spaceId?: StringNullableFilter<"Task"> | string | null
+    spaceId?: StringFilter<"Task"> | string
     taskType?: StringNullableFilter<"Task"> | string | null
     environment?: StringFilter<"Task"> | string
-    space?: XOR<SpaceNullableScalarRelationFilter, SpaceWhereInput> | null
+    space?: XOR<SpaceScalarRelationFilter, SpaceWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -4664,7 +4645,7 @@ export namespace Prisma {
     isCompleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    spaceId?: SortOrderInput | SortOrder
+    spaceId?: SortOrder
     taskType?: SortOrderInput | SortOrder
     environment?: SortOrder
     space?: SpaceOrderByWithRelationInput
@@ -4684,10 +4665,10 @@ export namespace Prisma {
     isCompleted?: BoolFilter<"Task"> | boolean
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
-    spaceId?: StringNullableFilter<"Task"> | string | null
+    spaceId?: StringFilter<"Task"> | string
     taskType?: StringNullableFilter<"Task"> | string | null
     environment?: StringFilter<"Task"> | string
-    space?: XOR<SpaceNullableScalarRelationFilter, SpaceWhereInput> | null
+    space?: XOR<SpaceScalarRelationFilter, SpaceWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -4701,7 +4682,7 @@ export namespace Prisma {
     isCompleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    spaceId?: SortOrderInput | SortOrder
+    spaceId?: SortOrder
     taskType?: SortOrderInput | SortOrder
     environment?: SortOrder
     _count?: TaskCountOrderByAggregateInput
@@ -4722,7 +4703,7 @@ export namespace Prisma {
     isCompleted?: BoolWithAggregatesFilter<"Task"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
-    spaceId?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    spaceId?: StringWithAggregatesFilter<"Task"> | string
     taskType?: StringNullableWithAggregatesFilter<"Task"> | string | null
     environment?: StringWithAggregatesFilter<"Task"> | string
   }
@@ -4858,7 +4839,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     taskType?: string | null
     environment?: string
-    space?: SpaceCreateNestedOneWithoutTasksInput
+    space: SpaceCreateNestedOneWithoutTasksInput
     user: UserCreateNestedOneWithoutTasksInput
   }
 
@@ -4872,7 +4853,7 @@ export namespace Prisma {
     isCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    spaceId?: string | null
+    spaceId: string
     taskType?: string | null
     environment?: string
   }
@@ -4888,7 +4869,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskType?: NullableStringFieldUpdateOperationsInput | string | null
     environment?: StringFieldUpdateOperationsInput | string
-    space?: SpaceUpdateOneWithoutTasksNestedInput
+    space?: SpaceUpdateOneRequiredWithoutTasksNestedInput
     user?: UserUpdateOneRequiredWithoutTasksNestedInput
   }
 
@@ -4902,7 +4883,7 @@ export namespace Prisma {
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    spaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    spaceId?: StringFieldUpdateOperationsInput | string
     taskType?: NullableStringFieldUpdateOperationsInput | string | null
     environment?: StringFieldUpdateOperationsInput | string
   }
@@ -4917,7 +4898,7 @@ export namespace Prisma {
     isCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    spaceId?: string | null
+    spaceId: string
     taskType?: string | null
     environment?: string
   }
@@ -4945,7 +4926,7 @@ export namespace Prisma {
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    spaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    spaceId?: StringFieldUpdateOperationsInput | string
     taskType?: NullableStringFieldUpdateOperationsInput | string | null
     environment?: StringFieldUpdateOperationsInput | string
   }
@@ -5109,9 +5090,9 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
-  export type SpaceNullableScalarRelationFilter = {
-    is?: SpaceWhereInput | null
-    isNot?: SpaceWhereInput | null
+  export type SpaceScalarRelationFilter = {
+    is?: SpaceWhereInput
+    isNot?: SpaceWhereInput
   }
 
   export type UserScalarRelationFilter = {
@@ -5284,12 +5265,10 @@ export namespace Prisma {
     set?: boolean
   }
 
-  export type SpaceUpdateOneWithoutTasksNestedInput = {
+  export type SpaceUpdateOneRequiredWithoutTasksNestedInput = {
     create?: XOR<SpaceCreateWithoutTasksInput, SpaceUncheckedCreateWithoutTasksInput>
     connectOrCreate?: SpaceCreateOrConnectWithoutTasksInput
     upsert?: SpaceUpsertWithoutTasksInput
-    disconnect?: SpaceWhereInput | boolean
-    delete?: SpaceWhereInput | boolean
     connect?: SpaceWhereUniqueInput
     update?: XOR<XOR<SpaceUpdateToOneWithWhereWithoutTasksInput, SpaceUpdateWithoutTasksInput>, SpaceUncheckedUpdateWithoutTasksInput>
   }
@@ -5435,7 +5414,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     taskType?: string | null
     environment?: string
-    space?: SpaceCreateNestedOneWithoutTasksInput
+    space: SpaceCreateNestedOneWithoutTasksInput
   }
 
   export type TaskUncheckedCreateWithoutUserInput = {
@@ -5447,7 +5426,7 @@ export namespace Prisma {
     isCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    spaceId?: string | null
+    spaceId: string
     taskType?: string | null
     environment?: string
   }
@@ -5491,7 +5470,7 @@ export namespace Prisma {
     isCompleted?: BoolFilter<"Task"> | boolean
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
-    spaceId?: StringNullableFilter<"Task"> | string | null
+    spaceId?: StringFilter<"Task"> | string
     taskType?: StringNullableFilter<"Task"> | string | null
     environment?: StringFilter<"Task"> | string
   }
@@ -5655,7 +5634,7 @@ export namespace Prisma {
     isCompleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    spaceId?: string | null
+    spaceId: string
     taskType?: string | null
     environment?: string
   }
@@ -5671,7 +5650,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskType?: NullableStringFieldUpdateOperationsInput | string | null
     environment?: StringFieldUpdateOperationsInput | string
-    space?: SpaceUpdateOneWithoutTasksNestedInput
+    space?: SpaceUpdateOneRequiredWithoutTasksNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutUserInput = {
@@ -5683,7 +5662,7 @@ export namespace Prisma {
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    spaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    spaceId?: StringFieldUpdateOperationsInput | string
     taskType?: NullableStringFieldUpdateOperationsInput | string | null
     environment?: StringFieldUpdateOperationsInput | string
   }
@@ -5697,7 +5676,7 @@ export namespace Prisma {
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    spaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    spaceId?: StringFieldUpdateOperationsInput | string
     taskType?: NullableStringFieldUpdateOperationsInput | string | null
     environment?: StringFieldUpdateOperationsInput | string
   }

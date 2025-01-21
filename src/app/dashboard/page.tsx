@@ -16,6 +16,7 @@ export default async function DashboardPage() {
     }
   })
 
+  // Prisma 타입 정의
   type TaskWithSpace = Prisma.TaskGetPayload<{
     include: { space: true }
   }>
