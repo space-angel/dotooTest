@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   try {
     const payload = (await request.json()) as TaskData;
     
-    if (!payload.title || !payload.spaceId || !payload.taskType || !payload.dueDate || !payload.environment) {
+    if (!payload.title || !payload.spaceId || !payload.taskType || !payload.dueDate || !payload.environment || !payload.userId) {
       return NextResponse.json(
         { message: "필수 필드가 누락되었습니다." },
         { status: 400 }
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         dueDate: new Date(payload.dueDate),
         environment: payload.environment,
         description: payload.description ?? null,
-        userId: 'default-user',  // 임시 userId 설정 또는 필요에 따라 수정
+        userId: payload.userId,
         isCompleted: false
       },
       include: {
@@ -54,9 +54,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(task, { status: 201 });
   } catch (error) {
-    console.error('Task 생성 에러:', error);
+    console.error('Task 생성 상세 에러:', error);
     return NextResponse.json(
-      { message: "할일 생성에 실패했습니다." },
+      { message: "할일 생성에 실패했습니다.", error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

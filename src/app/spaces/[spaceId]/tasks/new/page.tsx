@@ -47,6 +47,16 @@ export default function NewTaskPage({ params }: PageProps) {
     }
 
     try {
+      // 현재 로그인된 사용자의 ID를 가져옵니다
+      const authResponse = await fetch('/api/check-session')
+      const authData = await authResponse.json()
+      
+      if (!authData.authenticated || !authData.user?.userId) {
+        alert('로그인이 필요합니다.')
+        router.push('/login')
+        return
+      }
+
       const task = tasks.find(t => t.level === selectedLevel)
       if (!task) {
         alert('선택된 할일 정보를 찾을 수 없습니다.')
@@ -59,7 +69,8 @@ export default function NewTaskPage({ params }: PageProps) {
         taskType: task.id,
         assignedTo: selectedUser,
         dueDate: `${dateParam}T00:00:00.000Z`,
-        environment: 'test2'
+        environment: 'test2',
+        userId: authData.user.userId  // 사용자 ID 추가
       }
 
       // 페이로드 유효성 검사 추가
