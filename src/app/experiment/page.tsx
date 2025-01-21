@@ -9,8 +9,6 @@ import Navbar from '../../components/Navbar'
 import WeeklyCalendar from '../../components/WeeklyCalendar'
 import type { ExperimentTask } from '../../types/task'
 
-
-
 export default function ExperimentPage() {
   const router = useRouter()
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -55,85 +53,15 @@ export default function ExperimentPage() {
     return <div>Error: {error}</div>
   }
 
-  // 선택된 날짜의 tasks 필터링
-  const selectedDateTasks = tasks.filter(task => {
+  // ExperimentTask[] 타입의 tasks를 필터링
+  const selectedDateTasks = tasks.filter((task: ExperimentTask) => {
     if (!task?.dueDate) return false;
-    
-    // timezone을 고려한 날짜 비교
     const taskDate = startOfDay(new Date(task.dueDate));
-    return isSameDay(taskDate, selectedDate);
+    const currentDate = startOfDay(selectedDate);
+    return isSameDay(taskDate, currentDate);
   });
 
   console.log('선택된 날짜의 tasks:', selectedDateTasks);
-
-  // TODO: 날짜 선택 기능 구현 예정
-  // const _handleDateSelect = (date: Date) => {
-  //   setSelectedDate(date);
-  //   console.log('Selected new date:', format(date, 'yyyy-MM-dd'));
-  // };
-
-  // TODO: 할일 저장 기능 구현 예정
-  // const _handleSaveTask = async () => {
-  //   if (!selectedTask || !selectedDate) return;
-
-  //   const [spaceId, level] = selectedTask.split('-');
-  //   const taskData = tasks[spaceId]?.find((t: ExperimentTask) => t.level === level.toUpperCase());
-    
-  //   if (!taskData) return;
-
-  //   try {
-  //     const response = await fetch('/api/tasks', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'X-Environment': 'test2',
-  //       },
-  //       body: JSON.stringify({
-  //         title: taskData.title,
-  //         spaceId: taskData.spaceId,
-  //         taskType: taskData.id,
-  //         assignedTo: selectedUsers.join(','),
-  //         dueDate: format(selectedDate, 'yyyy-MM-dd'),
-  //         environment: 'test2'
-  //       }),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('할일 저장 실패');
-  //     }
-
-  //     setSelectedTask(null);
-  //     setSelectedUsers([]);
-  //     setSelectedDate(new Date());
-      
-  //     fetchTasks();
-  //   } catch (error) {
-  //     console.error('Error saving task:', error);
-  //     alert('할일 저장에 실패했습니다.');
-  //   }
-  // };
-
-  // TODO: 할일 삭제 기능 구현 예정
-  // const _handleDeleteTask = async (taskId: string) => {
-  //   try {
-  //     const response = await fetch(`/api/tasks/${taskId}`, {
-  //       method: 'DELETE',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'X-Environment': 'test2'
-  //       }
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('할일 삭제 실패');
-  //     }
-
-  //     fetchTasks();
-  //   } catch (error) {
-  //     console.error('Error deleting task:', error);
-  //     alert('할일 삭제에 실패했습니다.');
-  //   }
-  // };
 
   return (
     <div className="flex flex-col h-[680px] max-w-[390px] mx-auto relative">

@@ -51,7 +51,9 @@ export interface TaskData {
   title: string;
   spaceId: string;
   taskType: string;
-  assignedTo?: string;
+  assignedTo: string;
   dueDate: string;
   environment: string;
+  description?: string | null;
+  userId?: string;
 } 

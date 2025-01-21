@@ -44,66 +44,59 @@ export async function GET() {
 // POST 요청 처리
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('auth-token')
+    const cookieStore = await cookies();
+    const token = cookieStore.get('auth-token');
 
     if (!token) {
       return NextResponse.json(
         { message: "로그인이 필요합니다." },
         { status: 401 }
-      )
+      );
     }
 
-    let userId: string
+    let userId: string;
     try {
-      const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string }
-      userId = verified.userId
+      const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
+      userId = verified.userId;
     } catch {
       return NextResponse.json(
         { message: "유효하지 않은 인증 토큰입니다." },
         { status: 401 }
-      )
+      );
     }
 
-    const text = await request.text()
-    if (!text) {
+    const payload = (await request.json()) as TaskData;
+    
+    if (!payload.title || !payload.spaceId || !payload.taskType || !payload.dueDate || !payload.environment) {
       return NextResponse.json(
-        { message: "요청 본문이 비어있습니다." },
+        { message: "필수 필드가 누락되었습니다." },
         { status: 400 }
-      )
+      );
     }
 
-    let payload: TaskData
-    try {
-      payload = JSON.parse(text) as TaskData
-    } catch {
-      return NextResponse.json(
-        { message: "잘못된 JSON 형식입니다." },
-        { status: 400 }
-      )
-    }
-
-    const { title, spaceId, taskType, assignedTo, dueDate, environment } = payload
-
-    // Task 생성
     const task = await prisma.task.create({
       data: {
-        title,
-        spaceId,
-        taskType,
-        assignedTo,
-        dueDate: new Date(dueDate),
-        environment,
-        userId
+        title: payload.title,
+        spaceId: payload.spaceId,
+        taskType: payload.taskType,
+        assignedTo: payload.assignedTo ?? null,
+        dueDate: new Date(payload.dueDate),
+        environment: payload.environment,
+        description: payload.description ?? null,
+        userId: userId,  // 토큰에서 추출한 userId 사용
+        isCompleted: false
+      },
+      include: {
+        space: true
       }
-    })
+    });
 
-    return NextResponse.json(task, { status: 201 })
-
-  } catch {
+    return NextResponse.json(task, { status: 201 });
+  } catch (error) {
+    console.error('Task 생성 에러:', error);
     return NextResponse.json(
       { message: "할일 생성에 실패했습니다." },
       { status: 500 }
-    )
+    );
   }
 } 
