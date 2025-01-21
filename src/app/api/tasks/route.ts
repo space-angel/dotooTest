@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import prisma from '../../../lib/prisma'
+import { authenticate } from '../middleware/auth'
 import { TaskData } from '@/types/task'
 
 // GET 요청 처리
@@ -26,9 +27,10 @@ export async function GET() {
 // POST 요청 처리
 export async function POST(request: Request) {
   try {
+    const userId = await authenticate();  // 인증된 사용자 ID 가져오기
     const payload = (await request.json()) as TaskData;
     
-    if (!payload.title || !payload.spaceId || !payload.taskType || !payload.dueDate || !payload.environment || !payload.userId) {
+    if (!payload.title || !payload.spaceId || !payload.taskType || !payload.dueDate || !payload.environment) {
       return NextResponse.json(
         { message: "필수 필드가 누락되었습니다." },
         { status: 400 }
@@ -44,7 +46,7 @@ export async function POST(request: Request) {
         dueDate: new Date(payload.dueDate),
         environment: payload.environment,
         description: payload.description ?? null,
-        userId: payload.userId,
+        userId: userId,  // 인증된 사용자 ID 사용
         isCompleted: false
       },
       include: {

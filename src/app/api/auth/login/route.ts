@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export async function POST(request: Request) {
   try {
@@ -33,7 +36,17 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({
+    // JWT 토큰 생성 시 보안 옵션 강화
+    const token = jwt.sign(
+      { userId: user.id },
+      JWT_SECRET,
+      { 
+        expiresIn: '1d',
+        algorithm: 'HS256'  // 명시적 알고리즘 설정
+      }
+    );
+
+    const response = NextResponse.json({
       success: true,
       user: {
         id: user.id,
@@ -41,6 +54,18 @@ export async function POST(request: Request) {
         name: user.name
       }
     });
+
+    // 쿠키 설정 강화
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: true,  // HTTPS에서만 작동
+      sameSite: 'strict',  // CSRF 방지
+      maxAge: 86400,
+      path: '/',
+      domain: process.env.NEXT_PUBLIC_DOMAIN  // 배포 도메인 설정
+    });
+
+    return response;
 
   } catch (error) {
     console.error('Login error:', error);
