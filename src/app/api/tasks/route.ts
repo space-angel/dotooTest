@@ -5,14 +5,17 @@ import { authenticate } from '../middleware/auth'
 // GET 요청 처리
 export async function GET(request: Request) {
   try {
+    const userId = await authenticate();  // 현재 로그인한 유저 ID 가져오기
     const { searchParams } = new URL(request.url)
     const environment = searchParams.get('environment') || 'test1'
 
     console.log('조회하는 환경:', environment)
+    console.log('조회하는 유저:', userId)
 
     const tasks = await prisma.task.findMany({
       where: {
-        environment
+        environment,
+        userId, // 현재 로그인한 유저의 tasks만 조회
       },
       include: {
         space: true,
@@ -27,6 +30,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ tasks })
   } catch (error) {
     console.error("Tasks 조회 중 오류:", error)
+    if (error instanceof Error && error.message === "로그인이 필요합니다.") {
+      return NextResponse.json(
+        { error: "로그인이 필요합니다." },
+        { status: 401 }
+      )
+    }
     return NextResponse.json(
       { error: "Tasks 조회에 실패했습니다." },
       { status: 500 }
