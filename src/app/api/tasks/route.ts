@@ -1,28 +1,10 @@
 import { NextResponse } from 'next/server'
 import prisma from '../../../lib/prisma'
-import { cookies } from 'next/headers'
-import jwt from 'jsonwebtoken'
 import { TaskData } from '@/types/task'
-
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined in environment variables')
-}
-
-const JWT_SECRET = process.env.JWT_SECRET
 
 // GET 요청 처리
 export async function GET() {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('auth-token')
-
-    if (!token) {
-      return NextResponse.json(
-        { message: "로그인이 필요합니다." },
-        { status: 401 }
-      )
-    }
-
     const tasks = await prisma.task.findMany({
       where: {
         environment: 'test2'
@@ -44,27 +26,6 @@ export async function GET() {
 // POST 요청 처리
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token');
-
-    if (!token) {
-      return NextResponse.json(
-        { message: "로그인이 필요합니다." },
-        { status: 401 }
-      );
-    }
-
-    let userId: string;
-    try {
-      const verified = jwt.verify(token.value, JWT_SECRET) as { userId: string };
-      userId = verified.userId;
-    } catch {
-      return NextResponse.json(
-        { message: "유효하지 않은 인증 토큰입니다." },
-        { status: 401 }
-      );
-    }
-
     const payload = (await request.json()) as TaskData;
     
     if (!payload.title || !payload.spaceId || !payload.taskType || !payload.dueDate || !payload.environment) {
@@ -83,7 +44,7 @@ export async function POST(request: Request) {
         dueDate: new Date(payload.dueDate),
         environment: payload.environment,
         description: payload.description ?? null,
-        userId: userId,  // 토큰에서 추출한 userId 사용
+        userId: 'default-user',  // 임시 userId 설정 또는 필요에 따라 수정
         isCompleted: false
       },
       include: {
