@@ -169,7 +169,9 @@ export default function NewTaskPage() {
             </label>
             <WeeklyCalendar 
               selectedDate={selectedDate}
-              onDateSelect={setSelectedDate}
+              onDateSelect={(date) => {
+                setSelectedDate(date)
+              }}
             />
           </div>
 

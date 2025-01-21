@@ -1,7 +1,26 @@
 import prisma from "../../lib/prisma"
 import DashboardView from "./DashboardView"
 import type { Task } from "../../types/task"
-import type { Prisma } from '@prisma/client'
+
+interface PrismaTask {
+  id: string
+  title: string
+  description: string | null
+  dueDate: Date
+  isCompleted: boolean
+  assignedTo: string | null
+  userId: string
+  spaceId: string
+  taskType: string | null
+  space: {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+  }
+  createdAt: Date
+  updatedAt: Date
+}
 
 export default async function DashboardPage() {
   const tasks = await prisma.task.findMany({
@@ -16,12 +35,7 @@ export default async function DashboardPage() {
     }
   })
 
-  // Prisma 타입 정의
-  type TaskWithSpace = Prisma.TaskGetPayload<{
-    include: { space: true }
-  }>
-
-  const serializedTasks: Task[] = tasks.map((task: TaskWithSpace) => ({
+  const serializedTasks: Task[] = tasks.map((task: PrismaTask) => ({
     id: task.id,
     title: task.title,
     description: task.description,
