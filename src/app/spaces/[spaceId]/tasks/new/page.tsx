@@ -9,16 +9,17 @@ interface PageProps {
   params: Promise<{
     spaceId: string
   }>
-  searchParams: {
+  searchParams: Promise<{
     date?: string
     [key: string]: string | string[] | undefined
-  }
+  }>
 }
 
 export default function NewTaskPage(props: PageProps) {
   const params = use(props.params)
+  const searchParams = use(props.searchParams)
   const { spaceId } = params
-  const selectedDate = props.searchParams.date
+  const selectedDate = searchParams.date
   const router = useRouter()
 
   const [selectedLevel, setSelectedLevel] = useState('')
