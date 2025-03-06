@@ -19,6 +19,7 @@ interface Props {
   space: Space | null;
   onToggleComplete: (taskId: string) => Promise<void>;
   onDelete: (taskId: string) => Promise<void>;
+  onDateChange?: (newDate: Date) => void;
 }
 
 export default function TaskItem({ 
@@ -29,7 +30,8 @@ export default function TaskItem({
   isCompleted,
   space,
   onToggleComplete,
-  onDelete 
+  onDelete,
+  onDateChange 
 }: Props) {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -85,6 +87,17 @@ export default function TaskItem({
 
         {showDropdown && (
           <div className="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg py-1 z-10">
+            {onDateChange && (
+              <button
+                onClick={() => {
+                  onDateChange(new Date());
+                  setShowDropdown(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+              >
+                날짜 변경
+              </button>
+            )}
             <button
               onClick={() => {
                 onDelete(id);
